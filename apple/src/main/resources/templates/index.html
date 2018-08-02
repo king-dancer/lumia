@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header"  th:content="${_csrf.headerName}"/>
+<title sec:authentication="name"></title>
+<link rel="stylesheet" href="/webjars/bootstrap/4.1.1/css/bootstrap.min.css"/>
+<script src="/webjars/jquery/3.3.1-1/jquery.min.js"></script>
+<script src="/webjars/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span12">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>
+							编号
+						</th>
+						<th>
+							产品
+						</th>
+						<th>
+							交付时间
+						</th>
+						<th>
+							状态
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							1
+						</td>
+						<td>
+							TB - Monthly
+						</td>
+						<td>
+							01/04/2012
+						</td>
+						<td>
+							Default
+						</td>
+					</tr>
+					<tr class="success">
+						<td>
+							1
+						</td>
+						<td>
+							TB - Monthly
+						</td>
+						<td>
+							01/04/2012
+						</td>
+						<td>
+							Approved
+						</td>
+					</tr>
+					<tr class="error">
+						<td>
+							2
+						</td>
+						<td>
+							TB - Monthly
+						</td>
+						<td>
+							02/04/2012
+						</td>
+						<td>
+							Declined
+						</td>
+					</tr>
+					<tr class="warning">
+						<td>
+							3
+						</td>
+						<td>
+							TB - Monthly
+						</td>
+						<td>
+							03/04/2012
+						</td>
+						<td>
+							Pending
+						</td>
+					</tr>
+					<tr class="info">
+						<td>
+							4
+						</td>
+						<td>
+							TB - Monthly
+						</td>
+						<td>
+							04/04/2012
+						</td>
+						<td>
+							Call in to confirm
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="container">
+	<form id="upload">
+		<input type="file" name="file" id="file"/>
+		<input type="button" id="submit" value="上传"/>
+	</form>
+	<p id="warn"></p>
+</div>
+<div class="container">
+    <div class="starter-template">
+        <h1 th:text="${msg.title}"></h1>
+        <p class="bg-primary" th:text="${msg.content}"></p>
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+            <p class="bg-info" th:text="${msg.extraInfo}"></p>
+        </div>
+        <div sec:authorize="hasRole('ROLE_USER')">
+            <p class="bg-info">无更多显示信息</p>
+        </div>
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+        	<select id="province" onchange="showProvince()">
+        		<option>-省份-</option>
+        	</select>
+        	<select id="city" onchange="showCity()">
+        	</select>
+        	<select id="area">
+        	</select>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" class="btn btn-primary" value="注销"/>
+        </form>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+var header = $("meta[name='_csrf_header']").attr("content");
+var token =$("meta[name='_csrf']").attr("content");
+var submit = $("#submit");
+submit.click(function(){
+	var formData = new FormData($("#upload")[0]);
+	$.ajax({
+		url:"/upload",
+		data:formData,
+		type:"POST",
+		async: false,  
+        cache: false,  
+        contentType: false,  
+        processData: false, 
+		beforeSend : function(xhr) {
+            xhr.setRequestHeader(header, token);
+        },
+        success:function(data){
+        	$("#warn").html(data.msg);
+        }
+	})
+})
+function showCity(){
+	var cityCode = $("#city").val();
+	$.ajax({
+		url:"/getArea",
+        data:{"cityCode":cityCode},
+        type:"POST",
+        dataType:"json",
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader(header, token);
+        },
+        success:function(data){
+        	$("#area").html("<option>-区、县-</option>");
+            var option="";
+            $.each(data,function(i,result){
+            	option="<option value='"+result['code']+"'>"+result['name']+"</option>";
+            	$("#area").append(option);
+            })
+        }
+	});
+}
+function showProvince(){
+	var provinceCode = $("#province").val();
+	$.ajax({
+		url:"/getCity",
+        data:{"provinceCode":provinceCode},
+        type:"POST",
+        dataType:"json",
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader(header, token);
+        },
+        success:function(data){
+        	$("#city").html("<option>-地级市-</option>");
+        	$("#area").html("<option>-区、县-</option>");
+            var option="";
+            $.each(data,function(i,result){
+            	option="<option value='"+result['code']+"'>"+result['name']+"</option>";
+            	$("#city").append(option);
+            })
+        }
+	});
+}
+$(function(){
+	$.ajax({
+		url:"/getProvince",
+        data:{},
+        type:"POST",
+        dataType:"json",
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader(header, token);
+        },
+        success:function(data){
+            var option="";
+            $.each(data,function(i,result){
+            	option="<option value='"+result['code']+"'>"+result['name']+"</option>";
+            	$("#province").append(option);
+            })
+        }
+	});
+	showProvince();
+	showCity();
+});
+</script>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insert title here</title>
+</head>
+<body>
+	<div>
+		<p th:if="${param.logout}">已注销！</p>
+		<p th:if="${param.error}">有错误，请重试！</p>
+		<form th:action="@{/login}" method="post">
+		<p>
+			<label for="username">账号</label>
+        	<input type="text" class="form-control" name="username" value="" placeholder="账号"/>
+        </p>
+        <p>
+        	<label for="password">密码</label>
+            <input type="password" class="form-control" name="password" placeholder="密码"/>
+        </p>
+        <input type="submit" id="login" value="Login"/>
+		</form>
+	</div>
+</body>
+</html>
