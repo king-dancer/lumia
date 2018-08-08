@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>首页</title>
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">  
+<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.css">
+<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.js"></script>
+</head>
+<body>
+	<div class="container">
+		<table class="table" id="hero"></table>
+	</div>
+</body>
+<script type="text/javascript">
+	$(function(){
+		$("#hero").bootstrapTable({
+			url:'/hero',
+			pagination: true,//true显示分页
+		    toolbar: '#toolbar',
+		    striped: true,
+		    cache: false,
+		    method:'post',//请求方式
+		    contentType : "application/x-www-form-urlencoded",//这句非常重要，否决后台接收不到分页传的参数
+		    sidePagination: "server",//分页方式 server 服务端分页，client 客户端分页
+		    pageNumber:1,//初始化时显示第几页
+		    pageSize: 3,//每页显示多少条数据
+		    pageList: [1,2,3],//可选每页显示数据条数
+		    queryParams:function (params) {//分页传到后台的参数
+		    	var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+		    			pageSize: params.limit,   //页面大小
+		    			offset: params.offset,  //页码
+		    			search:params.search
+		    			};
+		    			return temp;
+		    			},
+		    columns: [{
+		        field: 'id',//对应json数据中的key值
+		        title: '编号',//table表头每列的名字
+		        align: 'center'
+		    }, {
+		        field: 'name',
+		        title: '名称',
+		        align: 'center'
+		    }, {
+		        field: 'nickName',
+		        title: '称号',
+		        align: 'center'
+		    }, {
+		    	field: 'sex',
+		    	title: '性别',
+		    	align: 'center',
+		    	formatter: function(value,row,index){
+		    		switch (value){
+		    		case '1':
+		    			return '男';
+		    			break;
+		    		case '0':
+		    			return '女';
+		    			break;
+		    		default:
+		    			return '-';
+		    		}
+		    	}
+		    }]
+		})
+	});
+</script>
+</html>

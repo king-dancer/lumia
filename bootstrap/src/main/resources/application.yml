@@ -1,0 +1,5 @@
+server:
+  port: 2008
+spring:
+  application:
+    name: bootstrap

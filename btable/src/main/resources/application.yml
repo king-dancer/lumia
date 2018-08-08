@@ -1,0 +1,18 @@
+server:
+  port: 2020
+spring:
+  application:
+    name: btable
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://fallingsnow.club:3306/meizu?useUnicode=true&characterEncoding=utf-8
+    username: lumia
+    password: lumia830
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: false
+logging:
+  path: ${LOG_PATH:logs}
+  level:
+    com.spring.btable: info
