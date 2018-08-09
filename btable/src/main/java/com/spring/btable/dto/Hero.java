@@ -9,17 +9,17 @@ import javax.persistence.Id;
 public class Hero {
 	@Id
 	@GeneratedValue
-	private int id;
+	private Integer id;
 	@Column(name="name")
 	private String name;
 	@Column(name="nickname")
 	private String nickName;
 	@Column(name="sex")
 	private String sex;
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	public String getName() {
@@ -40,5 +40,4 @@ public class Hero {
 	public void setSex(String sex) {
 		this.sex = sex;
 	}
-	
 }

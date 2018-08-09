@@ -6,12 +6,13 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://fallingsnow.club:3306/meizu?useUnicode=true&characterEncoding=utf-8
+#    url: jdbc:mysql://localhost:3306/meizu?useUnicode=true&characterEncoding=utf-8
     username: lumia
     password: lumia830
   jpa:
     hibernate:
       ddl-auto: update
-    generate-ddl: false
+    generate-ddl: true
 logging:
   path: ${LOG_PATH:logs}
   level:

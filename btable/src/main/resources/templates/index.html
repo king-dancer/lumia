@@ -13,32 +13,152 @@
 </head>
 <body>
 	<div class="container">
+		<div id=search class="panel panel-primary">
+			<div class="panel-heading">
+				<h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">查询内容</h4>
+			</div>
+			<!-- class collapse in 默认展示面板 -->
+			<div id="collapseThree" class="panel-collapse collapse in">
+			<div class="panel-body">
+				<div class="form-group col-md-3">
+					<label for="searchId" class="col-md-3">编号</label>
+					<div class="col-md-9">
+						<input type="text" class="form-control" id="searchId" placeholder="输入编号，准确搜索"/>
+					</div>
+				</div>
+				<div class="form-group col-md-3">
+					<label for="searchName" class="col-md-3">名称</label>
+					<div class="col-md-9">
+						<input type="text" class="form-control" id="searchName" placeholder="输入名称，模糊搜索"/>
+					</div>
+				</div>
+				<div class="form-group col-md-3">
+					<label for="searchId" class="col-md-3">性别</label>
+					<div class="col-md-9">
+						<select class="form-control" id="searchSex">
+							<option value=""></option>
+							<option value="1">男</option>
+							<option value="0">女</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-md-2">
+					<button class="btn btn-danger" onclick="search()">搜索</button>
+				</div>
+			</div>
+			</div>
+		</div>
+		<div id="toolbar">
+			<!--<button class="btn btn-success" data-toggle="modal" data-target="#updateModal" onclick="show()">查看</button> -->
+			<button class="btn btn-success" data-toggle="modal" onclick="show()">查看</button>
+		</div>
 		<table class="table" id="hero"></table>
+	</div>
+	<div>
+		<div class="modal fade" role="dialog" id="updateModal" aria-labelledby="updateModalTitle" tabindex="-1" aria-hidden="true" data-backdrop="static">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 class="modal-title" id="updateModalTitle">更新英雄信息</h4>
+						</div>
+						<div class="modal-body">
+							<form id="editForm" class="form-horizontal" method="post">
+								<div class="form-group">
+									<label class="col-sm-3" for="id">编号</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control" id="id" readonly name="id" placeholder="输入编号"/>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3" for="name">名称</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control" id="name" name="name" placeholder="输入名称"/>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3" for="nickName">称号</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control" id="nickName" name="nickName" placeholder="输入称号"/>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3" for="sex">性别</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="sex" name="sex">
+											<option value="1">男</option>
+											<option value="0">女</option>
+										</select>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                			<button type="button" class="btn btn-primary" onclick="updateHero()">提交更改</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" role="dialog" aria-labelledby="tipTitle" id="tip">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 id="tipTitle" class="modal-title">提示</h4>
+						</div>
+						<div class="modal-body">
+							<h4 id="tipContent"></h4>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary" data-dismiss="modal">确定</button>
+						</div>
+					</div>
+				</div>
+			</div>
 	</div>
 </body>
 <script type="text/javascript">
 	$(function(){
 		$("#hero").bootstrapTable({
-			url:'/hero',
+			url:'/pageHero',
 			pagination: true,//true显示分页
 		    toolbar: '#toolbar',
 		    striped: true,
 		    cache: false,
+		    sortable: true,//是否启用排序
+		    sortOrder: "asc",//排序方式
 		    method:'post',//请求方式
+		    showColumns: true,//是否显示所有的列（选择显示的列）
+		    showRefresh: true,//是否显示刷新按钮
+		    clickToSelect: true,//是否开启点击选择行
+		    search: true,//是否显示表格搜索
 		    contentType : "application/x-www-form-urlencoded",//这句非常重要，否决后台接收不到分页传的参数
 		    sidePagination: "server",//分页方式 server 服务端分页，client 客户端分页
+		    uniqueId: "id",//每一行的唯一标识，一般为主键列
 		    pageNumber:1,//初始化时显示第几页
 		    pageSize: 3,//每页显示多少条数据
 		    pageList: [1,2,3],//可选每页显示数据条数
 		    queryParams:function (params) {//分页传到后台的参数
 		    	var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-		    			pageSize: params.limit,   //页面大小
-		    			offset: params.offset,  //页码
-		    			search:params.search
-		    			};
-		    			return temp;
-		    			},
+	    			pageSize: params.limit,   //页面大小
+	    			offset: params.offset,  //页码 注意，这个页码已经计算过的
+	    			id:$("#searchId").val(),
+	    			name:$("#searchName").val(),
+	    			sex:$("#searchSex").val()
+		    	};
+		    	return temp;
+		    },
 		    columns: [{
+		    	checkbox: 'true',
+		    	field: 'box'
+		    },{ 
+				title: '序号',
+				align: 'center',
+				width: '3%',
+		    	formatter:function(value,row,index){
+		    		return index+1;
+		    	}
+		    },{
 		        field: 'id',//对应json数据中的key值
 		        title: '编号',//table表头每列的名字
 		        align: 'center'
@@ -69,5 +189,40 @@
 		    }]
 		})
 	});
+	function show(){
+		var rows = $("#hero").bootstrapTable('getSelections');//获取复选框选中行的对象
+		if(rows.length != 1){
+			$("#tipContent").text("请选择一条信息!");
+			$("#tip").modal('show');
+		}else{
+			for(var i=0;i<rows.length;i++){
+				$("#id").val(rows[i].id);
+				$("#name").val(rows[i].name);
+				$("#nickName").val(rows[i].nickName);
+				$("#sex").val(rows[i].sex);
+				$("#updateModal").modal('show');//调出某个拟态框
+			}
+		}
+	}
+	function updateHero(){
+		var parm = $("#editForm").serializeArray();//获取form中的参数
+		$.ajax({
+			url:'/updateHero',
+			method:'POST',
+			data:parm,//参数
+			dataType:'json',
+			success:function(data){
+				if(data.status == "SUCCESS"){
+					$("#updateModal").modal("hide");
+					$("#tipContent").text("更新成功！");
+					$("#tip").modal('show');
+					$("#hero").bootstrapTable('refresh');
+				}
+			}
+		})
+	}
+	function search(){
+		$("#hero").bootstrapTable('refresh');
+	}
 </script>
 </html>
