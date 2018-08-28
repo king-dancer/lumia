@@ -1,0 +1,14 @@
+server:
+  port: 9099
+spring:
+  application:
+    name: lemon
+  datasource:
+    url: jdbc:mysql://193.112.214.43:3306/lumia
+    driver-class-name: com.mysql.jdbc.Driver
+    username: lumia
+    password: lumia830
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

@@ -7,13 +7,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.mockito.internal.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -41,6 +38,7 @@ public class HeroService {
 	 */
 	public List<Hero> pageHero(Hero hero,int pageNum,int pageSize){
 		Specification<Hero> specification = getSpecification(hero);
+		//new PageRequest(pageNum,pageSize)过时，使用PageRequest.of(pageNum,pageSize)代替，此时pageNum是从0开始代表第1页，1代表第2页。。。。
 		pageNum = pageNum / pageSize;
 		Page<Hero> pageHero = hr.findAll(specification, PageRequest.of(pageNum, pageSize));
 		return pageHero.getContent();
